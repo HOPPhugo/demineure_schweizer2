@@ -209,7 +209,12 @@ namespace demineure_schweizer2
             }
             
             Console.WriteLine(landMines);
+            movement();
             Console.ReadLine();
+        }
+        static void movement()
+        {
+            Console.SetCursorPosition(7, 6);
         }
     }
 }
