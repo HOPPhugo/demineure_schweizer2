@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,10 @@ namespace demineure_schweizer2
         public static int collones;
         public static int difficulty;
         public static int landMines;
+        public static bool gagner = true;
+        public static int j;
+        public static bool test = true;
+        public static string direction = "";
         static void Main(string[] args)
         {
             Title();
@@ -209,12 +214,58 @@ namespace demineure_schweizer2
             }
             
             Console.WriteLine(landMines);
-            movement();
+            mouvement();
             Console.ReadLine();
         }
         static void movement()
         {
+                Console.SetCursorPosition(7, 6);
+            for (int i =0; gagner == true; i++){
+                ConsoleKeyInfo keyPressed = Console.ReadKey();
+                j++;
+                    switch (keyPressed.Key)
+                    {
+                        case ConsoleKey.UpArrow: Console.CursorTop -= 2; break;
+                        case ConsoleKey.DownArrow: Console.CursorTop += 2; break;
+                        case ConsoleKey.LeftArrow: Console.CursorLeft -= 4; break;
+                        case ConsoleKey.RightArrow: Console.CursorLeft += 4; break;
+                    } 
+                if (j+1 > collones)
+                {
+                    j = 0;
+                    Console.CursorLeft = 7;
+                    test = false;
+                    
+                }
+            }
+            
+        }
+        static void mouvement()
+        {
             Console.SetCursorPosition(7, 6);
+            for (int i = 0; gagner == true; i++)
+            {
+                ConsoleKeyInfo keyPressed = Console.ReadKey();
+                    switch (keyPressed.Key)
+                    {
+                        case ConsoleKey.UpArrow: Console.CursorTop -= 2; break;
+                        case ConsoleKey.DownArrow: Console.CursorTop += 2; break;
+                        case ConsoleKey.LeftArrow: direction = "Droite"; break;
+                        case ConsoleKey.RightArrow: direction = "Droite"; break;
+                    }
+                if (direction == "Droite" && j + 1 > collones)
+                {
+                    j++;
+                    Console.CursorLeft -= 4;
+                }
+                else
+                {
+                    j = 0;
+                    Console.CursorLeft = 7;
+
+                }
+            }
+
         }
     }
 }
