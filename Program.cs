@@ -214,58 +214,38 @@ namespace demineure_schweizer2
             }
             
             Console.WriteLine(landMines);
-            mouvement();
+            movement();
             Console.ReadLine();
         }
         static void movement()
         {
                 Console.SetCursorPosition(7, 6);
-            for (int i =0; gagner == true; i++){
+            for (int i =0; gagner == true; i++)
+            {
                 ConsoleKeyInfo keyPressed = Console.ReadKey();
                 j++;
-                    switch (keyPressed.Key)
-                    {
-                        case ConsoleKey.UpArrow: Console.CursorTop -= 2; break;
-                        case ConsoleKey.DownArrow: Console.CursorTop += 2; break;
-                        case ConsoleKey.LeftArrow: Console.CursorLeft -= 4; break;
-                        case ConsoleKey.RightArrow: Console.CursorLeft += 4; break;
-                    } 
-                if (j+1 > collones)
+                switch (keyPressed.Key)
                 {
-                    j = 0;
-                    Console.CursorLeft = 7;
-                    test = false;
-                    
+                    case ConsoleKey.UpArrow: Console.CursorTop -= 2; break;
+                    case ConsoleKey.DownArrow: Console.CursorTop += 2; break;
+                    case ConsoleKey.LeftArrow: Console.CursorLeft -= 4; break;
+                    case ConsoleKey.RightArrow: direction="droite"; break;
+                } 
+                if (direction == "droite")
+                {
+                    if (j+1 > collones)
+                    {
+                        j = 0;
+                        Console.CursorLeft = 7;
+                    }
+                    else
+                    {
+                        Console.CursorLeft += 4;
+                    }
+
                 }
             }
             
-        }
-        static void mouvement()
-        {
-            Console.SetCursorPosition(7, 6);
-            for (int i = 0; gagner == true; i++)
-            {
-                ConsoleKeyInfo keyPressed = Console.ReadKey();
-                    switch (keyPressed.Key)
-                    {
-                        case ConsoleKey.UpArrow: Console.CursorTop -= 2; break;
-                        case ConsoleKey.DownArrow: Console.CursorTop += 2; break;
-                        case ConsoleKey.LeftArrow: direction = "Droite"; break;
-                        case ConsoleKey.RightArrow: direction = "Droite"; break;
-                    }
-                if (direction == "Droite" && j + 1 > collones)
-                {
-                    j++;
-                    Console.CursorLeft -= 4;
-                }
-                else
-                {
-                    j = 0;
-                    Console.CursorLeft = 7;
-
-                }
-            }
-
         }
     }
 }
