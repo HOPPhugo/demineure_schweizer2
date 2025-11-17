@@ -11,6 +11,7 @@ namespace demineure_schweizer2
         public static int lines;
         public static int collones;
         public static int difficulty;
+        public static int landMines;
         static void Main(string[] args)
         {
             Title();
@@ -42,9 +43,9 @@ namespace demineure_schweizer2
             Console.ResetColor();
             Console.Write("Nombre de lignes : ");
             bool getOut = int.TryParse(Console.ReadLine(),out lines);
+            Console.ForegroundColor = ConsoleColor.Red;
             if (getOut)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
                 if (lines < 6 || lines > 30)
                 {
                     Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
@@ -67,9 +68,9 @@ namespace demineure_schweizer2
             Console.Write("Nombre de colonnes: ");
 
             bool getOut = int.TryParse(Console.ReadLine(), out collones);
+            Console.ForegroundColor = ConsoleColor.Red;
             if (getOut)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
                 if (collones < 6 || collones > 30)
                 {
                     Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
@@ -103,12 +104,13 @@ namespace demineure_schweizer2
                     case 1: Console.WriteLine("→ Vous avez choisi le niveau FACILE !"); break;
                     case 2: Console.WriteLine("→ Vous avez choisi le niveau MOYEN !"); break;
                     case 3: Console.WriteLine("→ Vous avez choisi le niveau DIFFICILE !"); break;
-                    default: Console.WriteLine("Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n"); break;
+                    default: Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n"); break;
                 }
                 Grid();
             }
             else
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Saisie invalide !\n");
 
             }
@@ -137,7 +139,6 @@ namespace demineure_schweizer2
                     Console.WriteLine("Difficile");
                     Console.ResetColor(); break;
             }
-            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("");
             Console.ResetColor();
 
@@ -199,6 +200,16 @@ namespace demineure_schweizer2
                 Console.Write("═══╩");
             }
             Console.Write("═══╝");
+            landMines = lines * collones ;
+            switch (difficulty)
+            {
+                case 1: landMines = landMines / 10; break;
+                case 2: landMines = landMines / 4; break;
+                case 3: landMines = (landMines * 40 ) /100; break;
+            }
+            
+            Console.WriteLine(landMines);
+            Console.ReadLine();
         }
     }
 }
