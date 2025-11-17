@@ -16,10 +16,7 @@ namespace demineure_schweizer2
             Title();
             instructions();
             Lines();
-            Title();
-            instructions2();
-            Grid();
-            Console.ReadKey();
+            Console.ReadLine();
         }
         static void Title()
         {
@@ -69,21 +66,28 @@ namespace demineure_schweizer2
             Console.ResetColor();
             Console.Write("Nombre de colonnes: ");
 
-            collones = int.Parse(Console.ReadLine());
-            if (collones < 6 || collones > 30)
+            bool getOut = int.TryParse(Console.ReadLine(), out collones);
+            if (getOut)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
+                if (collones < 6 || collones > 30)
+                {
+                    Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
+                }
+                else
+                {
+                    Difficulty();
+                }
+            }
+            else {
                 Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
-                Console.ResetColor();
-                Collones();
+                
             }
-            else
-            {
-                Difficulty();
-            }
+            Collones();
         }
         static void Difficulty()
         {
+            Console.ResetColor();
             Console.WriteLine("\r\n    Merci d'entrer la difficulté pour votre jeu ");
             Console.WriteLine("    en sachant que : ");
             Console.WriteLine("         1--> niveau facile");
@@ -91,31 +95,24 @@ namespace demineure_schweizer2
             Console.WriteLine("         3--> niveau difficile");
             Console.WriteLine("----------------------------------------------------------------------------");
             Console.Write("\nEntrez le niveau de difficulté: ");
-            if (!int.TryParse(Console.ReadLine(), out difficulty))
+            bool getOut = int.TryParse(Console.ReadLine(), out difficulty);
+            if (getOut)
             {
-                Console.WriteLine("Saisie invalide !\n");
-                Difficulty();
-                return;
-            }
-            if (difficulty == 1)
-            {
-                Console.WriteLine("→ Vous avez choisi le niveau FACILE !");
-            }
-            else if (difficulty == 2)
-            {
-                Console.WriteLine("→ Vous avez choisi le niveau MOYEN !");
-            }
-            else if (difficulty == 3)
-            {
-                Console.WriteLine("→ Vous avez choisi le niveau DIFFICILE !");
+                switch (difficulty)
+                {
+                    case 1: Console.WriteLine("→ Vous avez choisi le niveau FACILE !"); break;
+                    case 2: Console.WriteLine("→ Vous avez choisi le niveau MOYEN !"); break;
+                    case 3: Console.WriteLine("→ Vous avez choisi le niveau DIFFICILE !"); break;
+                    default: Console.WriteLine("Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n"); break;
+                }
+                Grid();
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n");
-                Console.ResetColor();
-                Difficulty();
+                Console.WriteLine("Saisie invalide !\n");
+
             }
+            Difficulty();
         }
         static void instructions2()
         {
@@ -149,8 +146,10 @@ namespace demineure_schweizer2
         }
         static void Grid()
         {
-            int i = 0;
             Console.Clear();
+            Title();
+            instructions2();
+            int i = 0;
             
             Console.CursorLeft = 5;
             Console.Write("╔═══╦");
