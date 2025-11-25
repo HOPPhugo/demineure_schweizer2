@@ -109,7 +109,7 @@ namespace demineure_schweizer2
                     case 1: Console.WriteLine("→ Vous avez choisi le niveau FACILE !"); break;
                     case 2: Console.WriteLine("→ Vous avez choisi le niveau MOYEN !"); break;
                     case 3: Console.WriteLine("→ Vous avez choisi le niveau DIFFICILE !"); break;
-                    default: Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n"); break;
+                    default: Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n-Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n"); Difficulty(); break;
                 }
                 Grid();
             }
@@ -225,6 +225,7 @@ namespace demineure_schweizer2
             int firstSquare = Console.CursorLeft;
             for (int i =0; gagner == true; i++)
             {
+                int positionX = Console.CursorLeft; int positionY = Console.CursorTop;
                 ConsoleKeyInfo keyPressed = Console.ReadKey();
                 j++;
                 switch (keyPressed.Key)
@@ -233,6 +234,11 @@ namespace demineure_schweizer2
                     case ConsoleKey.DownArrow: direction = "bas"; break;
                     case ConsoleKey.LeftArrow: direction = "gauche"; break;
                     case ConsoleKey.RightArrow: direction="droite"; break;
+                    case ConsoleKey.Escape: Environment.Exit(0); break;
+                    case ConsoleKey.Enter: Console.SetCursorPosition(positionX, positionY); Console.Write("X");Console.CursorLeft--;  break;
+                    default: direction = ""; break;
+
+
                 } 
 
                 switch (direction)
@@ -241,7 +247,6 @@ namespace demineure_schweizer2
                     case "droite":
                         if (Console.CursorLeft >= lastSquare)
                         {
-                            j = 0;
                             Console.CursorLeft = 7;
                         }
                         else
