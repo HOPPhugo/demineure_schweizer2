@@ -220,6 +220,7 @@ namespace demineure_schweizer2
         static void movement()
         {
             int lastSquare = (7 + collones * 4) -4;
+            int lastSquareY = (6 + lines * 2) -2;
             Console.SetCursorPosition(7, 6);
             int firstSquare = Console.CursorLeft;
             for (int i =0; gagner == true; i++)
@@ -228,13 +229,14 @@ namespace demineure_schweizer2
                 j++;
                 switch (keyPressed.Key)
                 {
-                    case ConsoleKey.UpArrow: Console.CursorTop -= 2; break;
-                    case ConsoleKey.DownArrow: Console.CursorTop += 2; break;
+                    case ConsoleKey.UpArrow: direction = "haut"; break;
+                    case ConsoleKey.DownArrow: direction = "bas"; break;
                     case ConsoleKey.LeftArrow: direction = "gauche"; break;
                     case ConsoleKey.RightArrow: direction="droite"; break;
                 } 
 
                 switch (direction)
+
                 {
                     case "droite":
                         if (Console.CursorLeft >= lastSquare)
@@ -258,25 +260,23 @@ namespace demineure_schweizer2
                         }
                         break;
                     case "haut":
-                        if (j >= collones)
+                        if (Console.CursorTop <= 6)
                         {
-                            j = 0;
-                            Console.CursorLeft = 7;
+                            Console.CursorTop = lastSquareY;
                         }
                         else
                         {
-                            Console.CursorLeft += 4;
+                            Console.CursorTop -= 2;
                         }
                         break;
                     case "bas":
-                        if (j >= collones)
+                        if (Console.CursorTop >= lastSquareY)
                         {
-                            j = 0;
-                            Console.CursorLeft = 7;
+                            Console.CursorTop = 6;
                         }
                         else
                         {
-                            Console.CursorLeft += 4;
+                            Console.CursorTop += 2;
                         }
                         break;
                     default: break;
