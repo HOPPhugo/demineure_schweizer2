@@ -219,7 +219,9 @@ namespace demineure_schweizer2
         }
         static void movement()
         {
-                Console.SetCursorPosition(7, 6);
+            int lastSquare = (7 + collones * 4) -4;
+            Console.SetCursorPosition(7, 6);
+            int firstSquare = Console.CursorLeft;
             for (int i =0; gagner == true; i++)
             {
                 ConsoleKeyInfo keyPressed = Console.ReadKey();
@@ -228,24 +230,60 @@ namespace demineure_schweizer2
                 {
                     case ConsoleKey.UpArrow: Console.CursorTop -= 2; break;
                     case ConsoleKey.DownArrow: Console.CursorTop += 2; break;
-                    case ConsoleKey.LeftArrow: Console.CursorLeft -= 4; break;
+                    case ConsoleKey.LeftArrow: direction = "gauche"; break;
                     case ConsoleKey.RightArrow: direction="droite"; break;
                 } 
-                if (direction == "droite")
-                {
-                    if (j+1 > collones)
-                    {
-                        j = 0;
-                        Console.CursorLeft = 7;
-                    }
-                    else
-                    {
-                        Console.CursorLeft += 4;
-                    }
 
+                switch (direction)
+                {
+                    case "droite":
+                        if (Console.CursorLeft >= lastSquare)
+                        {
+                            j = 0;
+                            Console.CursorLeft = 7;
+                        }
+                        else
+                        {
+                            Console.CursorLeft += 4;
+                        }
+                        break;
+                    case "gauche":
+                        if (Console.CursorLeft <= 7)
+                        {
+                            Console.CursorLeft = lastSquare;
+                        }
+                        else
+                        {
+                            Console.CursorLeft -= 4;
+                        }
+                        break;
+                    case "haut":
+                        if (j >= collones)
+                        {
+                            j = 0;
+                            Console.CursorLeft = 7;
+                        }
+                        else
+                        {
+                            Console.CursorLeft += 4;
+                        }
+                        break;
+                    case "bas":
+                        if (j >= collones)
+                        {
+                            j = 0;
+                            Console.CursorLeft = 7;
+                        }
+                        else
+                        {
+                            Console.CursorLeft += 4;
+                        }
+                        break;
+                    default: break;
                 }
             }
             
         }
+
     }
 }
