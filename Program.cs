@@ -20,6 +20,7 @@ namespace demineure_schweizer2
         public static string direction = "";
         public static int currentX;
         public static int currentY;
+        public static int[,] grid;
         static void Main(string[] args)
         {
             Title();
@@ -50,7 +51,7 @@ namespace demineure_schweizer2
         {
             Console.ResetColor();
             Console.Write("Nombre de lignes : ");
-            bool getOut = int.TryParse(Console.ReadLine(),out lines);
+            bool getOut = int.TryParse(Console.ReadLine(), out lines);
             Console.ForegroundColor = ConsoleColor.Red;
             if (getOut)
             {
@@ -88,9 +89,10 @@ namespace demineure_schweizer2
                     Difficulty();
                 }
             }
-            else {
+            else
+            {
                 Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
-                
+
             }
             Collones();
         }
@@ -115,6 +117,7 @@ namespace demineure_schweizer2
                     default: Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n-Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n"); Difficulty(); break;
                 }
                 Grid();
+                movement();
             }
             else
             {
@@ -159,7 +162,7 @@ namespace demineure_schweizer2
             Title();
             instructions2();
             int i = 0;
-            
+
             Console.CursorLeft = 5;
             Console.Write("╔═══╦");
             for (; i < collones - 2; i++)
@@ -208,24 +211,24 @@ namespace demineure_schweizer2
                 Console.Write("═══╩");
             }
             Console.Write("═══╝");
-            landMines = lines * collones ;
+            landMines = lines * collones;
             switch (difficulty)
             {
                 case 1: landMines = landMines / 10; break;
                 case 2: landMines = landMines / 4; break;
-                case 3: landMines = (landMines * 40 ) /100; break;
+                case 3: landMines = (landMines * 40) / 100; break;
             }
-            
+
             Console.WriteLine(landMines);
+            grid = new int[lines, collones];
             LandMines();
-            Console.ReadLine();
         }
         static void movement()
         {
-            int lastSquare = (7 + collones * 4) -4;
-            int lastSquareY = (6 + lines * 2) -2;
+            int lastSquare = (7 + collones * 4) - 4;
+            int lastSquareY = (6 + lines * 2) - 2;
             int firstSquare = Console.CursorLeft;
-            for (int i =0; gagner == true; i++)
+            for (int i = 0; gagner == true; i++)
             {
                 direction = "";
                 int positionX = Console.CursorLeft; int positionY = Console.CursorTop;
@@ -236,13 +239,13 @@ namespace demineure_schweizer2
                     case ConsoleKey.UpArrow: direction = "haut"; break;
                     case ConsoleKey.DownArrow: direction = "bas"; break;
                     case ConsoleKey.LeftArrow: direction = "gauche"; break;
-                    case ConsoleKey.RightArrow: direction="droite"; break;
+                    case ConsoleKey.RightArrow: direction = "droite"; break;
                     case ConsoleKey.Escape: Environment.Exit(0); break;
-                    case ConsoleKey.Enter: Console.SetCursorPosition(positionX, positionY); Console.Write("X");Console.CursorLeft--;  break;
-                    default:  break;
+                    case ConsoleKey.Enter: Console.SetCursorPosition(positionX, positionY); Console.Write("X"); Console.CursorLeft--;CheckMines(); break;
+                    default: break;
 
 
-                } 
+                }
 
                 switch (direction)
 
@@ -287,7 +290,7 @@ namespace demineure_schweizer2
                         if (Console.CursorTop >= lastSquareY)
                         {
                             Console.CursorTop = 6;
-                            currentY=1;
+                            currentY = 1;
                         }
                         else
                         {
@@ -298,29 +301,29 @@ namespace demineure_schweizer2
                     default: break;
                 }
             }
-            
+
         }
-        private static void LandMines()
+        static int[,] LandMines()
         {
-            
-            int[,] grid = new int[lines, collones];
             Random random = new Random();
             for (int i = 0; i < landMines; i++)
             {
                 int X = random.Next(0, collones);
                 int Y = random.Next(0, lines);
                 grid[X, Y] = 1;
-                Console.SetCursorPosition(7+(X*4), 6+(Y*2));
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("°");
+                Console.SetCursorPosition(7 + (X * 4), 6 + (Y * 2));
             }
             Console.SetCursorPosition(7, 6);
-            movement();
+            return grid;
 
         }
-        private static void CheckMines()
+        static void CheckMines()
         {
-
+            if (grid[currentX, currentY] == 1)
+            {
+                Console.Clear();
+                Console.WriteLine("Vous avez perdu...");
+            }
         }
 
     }
