@@ -176,7 +176,7 @@ namespace demineure_schweizer2
         {
             Console.Clear();
             Title();
-            instructions2();
+            instructions2(); 
             int i = 0;
 
             Console.CursorLeft = 5;
@@ -230,14 +230,17 @@ namespace demineure_schweizer2
             landMines = lines * collones;
             switch (difficulty)
             {
-                case 1: landMines = landMines / 10; break;
+                case 1: landMines = landMines / 10;break;
                 case 2: landMines = landMines / 4; break;
                 case 3: landMines = (landMines * 40) / 100; break;
             }
             grid = new int[lines, collones];
+            Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.Write("\t♥ ♥ ♥");
+            Console.ResetColor();
             HeartX = Console.CursorLeft;
             HeartY = Console.CursorTop;
+            consignes();
             LandMines();
         }
         static void movement()
@@ -363,11 +366,46 @@ namespace demineure_schweizer2
 
             }
         }
+        static void consignes()
+        {
+            Console.SetCursorPosition((7 + collones * 4) + 4, 6);
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Consignes");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 7);
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("----------");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 8);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\t- Pour se déplacer dans le jeu utiliser les touches flèchées");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 9);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\t- Pour explorer une case la touche Enter");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 10);
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("\t- Pour définir une case en tant que mine (flag) la touche Espace");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 11);
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("\t- La touche Enter sur un flag enlève le flag");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 12);
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine("\t- Pour quitter la touche Esc");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 14);
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("La partie est gagnée :");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 15);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\t- une fois que toutes les cases ont été explorées");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 16);
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("\t- que toutes les vies ont été épuisées");
+            Console.SetCursorPosition((7 + collones * 4) + 4, 17);
+            Console.ResetColor();
+        }
         static void Looser()
         {
-            Console.Clear();
+            Console.Clear(); 
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("BAHAHHAHAH trop nul, t'es guez, ez ez ez ez ez ez ez booooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo 8-)");
+            Console.WriteLine("C'est la fin !\r\n\r\n!! PERDU !! Désolé toutes les mines ont explosés !");
             Console.ForegroundColor=ConsoleColor.Green;
             Console.WriteLine("Veut tu rejouer (O/N) ?");
             string answer = Console.ReadLine();
@@ -376,6 +414,7 @@ namespace demineure_schweizer2
                 case "O":
                 case "o":
                     Console.Clear();
+                    Console.ResetColor();
                     Title();
                     instructions();
                     Lines(); break;
