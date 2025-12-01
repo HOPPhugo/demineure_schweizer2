@@ -1,10 +1,13 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace demineure_schweizer2
 {
@@ -21,17 +24,29 @@ namespace demineure_schweizer2
         public static int currentX;
         public static int currentY;
         public static int[,] grid;
+        public static int HeartX;
+        public static int HeartY;
         static void Main(string[] args)
         {
+            int nbRow = 0;
+
+            //affichage un titre
             Title();
+
+            //affichage des instructions
             instructions();
+
+            // récupération du nombre de ligne
+
             Lines();
+
+            // r
             Console.ReadLine();
         }
         static void Title()
         {
             Console.WriteLine("\t****************************************************************************");
-            Console.WriteLine("\t*                :) Démineur simplifié (Hugo Schweizer) :)                 *");
+            Console.WriteLine("\t*                (: Démineur simplifié (Hugo Schweizer) :)                 *");
             Console.WriteLine("\t****************************************************************************");
 
         }
@@ -86,7 +101,8 @@ namespace demineure_schweizer2
                 }
                 else
                 {
-                    Difficulty();
+                    Console.SetWindowSize(240, 63);
+                        Difficulty();
                 }
             }
             else
@@ -218,9 +234,10 @@ namespace demineure_schweizer2
                 case 2: landMines = landMines / 4; break;
                 case 3: landMines = (landMines * 40) / 100; break;
             }
-
-            Console.WriteLine(landMines);
             grid = new int[lines, collones];
+            Console.Write("\t♥ ♥ ♥");
+            HeartX = Console.CursorLeft;
+            HeartY = Console.CursorTop;
             LandMines();
         }
         static void movement()
@@ -228,6 +245,7 @@ namespace demineure_schweizer2
             int lastSquare = (7 + collones * 4) - 4;
             int lastSquareY = (6 + lines * 2) - 2;
             int firstSquare = Console.CursorLeft;
+            int life = 3;
             for (int i = 0; gagner == true; i++)
             {
                 direction = "";
@@ -241,10 +259,11 @@ namespace demineure_schweizer2
                     case ConsoleKey.LeftArrow: direction = "gauche"; break;
                     case ConsoleKey.RightArrow: direction = "droite"; break;
                     case ConsoleKey.Escape: Environment.Exit(0); break;
-                    case ConsoleKey.Enter: Console.SetCursorPosition(positionX, positionY); Console.Write("X"); Console.CursorLeft--;CheckMines(); break;
+                    case ConsoleKey.Enter: Console.SetCursorPosition(positionX, positionY); CheckMines(positionX, positionY, ref life); Console.CursorLeft--; break;
+                    case ConsoleKey.Spacebar: Console.SetCursorPosition(positionX, positionY); Console.Write("◄"); Console.CursorLeft--; break;
                     default: break;
 
-
+                        
                 }
 
                 switch (direction)
@@ -310,21 +329,61 @@ namespace demineure_schweizer2
             {
                 int X = random.Next(0, collones);
                 int Y = random.Next(0, lines);
-                grid[X, Y] = 1;
-                Console.SetCursorPosition(7 + (X * 4), 6 + (Y * 2));
+                if (grid[X,Y] ==1)
+                {
+                    i--;
+                }
+                else{
+                    grid[X, Y] = 1;
+                    Console.SetCursorPosition(7 + (X * 4), 6 + (Y * 2));
+                }
             }
             Console.SetCursorPosition(7, 6);
             return grid;
 
         }
-        static void CheckMines()
+        static void CheckMines(int positionX,int positionY, ref int life)
         {
+            
             if (grid[currentX, currentY] == 1)
             {
-                Console.Clear();
-                Console.WriteLine("Vous avez perdu...");
+                life-=1;
+               Console.Write("X");
+               Console.SetCursorPosition(HeartX-=2, HeartY); Console.Write(" "); Console.Write(" ");
+                Console.SetCursorPosition(positionX, positionY);
+                Console.CursorLeft++;
+                if (life == 0)
+                {
+                    Looser();
+                }
+            }
+            else
+            {
+                Console.Write("▒");
+
             }
         }
+        static void Looser()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("BAHAHHAHAH trop nul, t'es guez, ez ez ez ez ez ez ez booooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo 8-)");
+            Console.ForegroundColor=ConsoleColor.Green;
+            Console.WriteLine("Veut tu rejouer (O/N) ?");
+            string answer = Console.ReadLine();
+            switch(answer)
+            {
+                case "O":
+                case "o":
+                    Console.Clear();
+                    Title();
+                    instructions();
+                    Lines(); break;
+                case "N":
+                case "n":Environment.Exit(0); break;
+            }
+        }
+        
 
     }
 }
