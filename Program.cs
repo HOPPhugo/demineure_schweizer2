@@ -251,6 +251,7 @@ namespace demineure_schweizer2
             int life = 3;
             for (int i = 0; gagner == true; i++)
             {
+                string action = "";
                 direction = "";
                 int positionX = Console.CursorLeft; int positionY = Console.CursorTop;
                 ConsoleKeyInfo keyPressed = Console.ReadKey();
@@ -262,18 +263,17 @@ namespace demineure_schweizer2
                     case ConsoleKey.LeftArrow: direction = "gauche"; break;
                     case ConsoleKey.RightArrow: direction = "droite"; break;
                     case ConsoleKey.Escape: Environment.Exit(0); break;
-                    case ConsoleKey.Enter: Console.SetCursorPosition(positionX, positionY); CheckMines(positionX, positionY, ref life); Console.CursorLeft--; break;
-                    case ConsoleKey.Spacebar: Console.SetCursorPosition(positionX, positionY); Console.Write("◄"); Console.CursorLeft--; break;
-                    default: break;
+                    case ConsoleKey.Enter: action = "Enter"; Console.SetCursorPosition(positionX, positionY); CheckMines(positionX, positionY, ref life, action); break;
+                    case ConsoleKey.Spacebar: action = "Spacebar"; Console.SetCursorPosition(positionX, positionY); CheckMines(positionX, positionY, ref life, action); break;
+                    default: action = "Nothing"; Console.SetCursorPosition(positionX, positionY); CheckMines(positionX, positionY, ref life, action); break;
 
                         
                 }
 
                 switch (direction)
-
                 {
                     case "droite":
-                        if (Console.CursorLeft >= lastSquare)
+                        if (Console.CursorLeft == lastSquare)
                         {
                             Console.CursorLeft = 7;
                             currentX = 1;
@@ -285,7 +285,7 @@ namespace demineure_schweizer2
                         }
                         break;
                     case "gauche":
-                        if (Console.CursorLeft <= 7)
+                        if (Console.CursorLeft == 7)
                         {
                             Console.CursorLeft = lastSquare;
                             currentX = collones;
@@ -322,6 +322,7 @@ namespace demineure_schweizer2
                         break;
                     default: break;
                 }
+                
             }
 
         }
@@ -339,32 +340,64 @@ namespace demineure_schweizer2
                 else{
                     grid[X, Y] = 1;
                     Console.SetCursorPosition(7 + (X * 4), 6 + (Y * 2));
+                    Console.Write("°");
+                    Console.CursorLeft--;
                 }
             }
             Console.SetCursorPosition(7, 6);
             return grid;
 
         }
-        static void CheckMines(int positionX,int positionY, ref int life)
+        static void CheckMines(int positionX,int positionY, ref int life, string action)
         {
-            
-            if (grid[currentX, currentY] == 1)
+            if (grid[currentX, currentY] == 0)
             {
-                life-=1;
-               Console.Write("X");
-               Console.SetCursorPosition(HeartX-=2, HeartY); Console.Write(" "); Console.Write(" ");
-                Console.SetCursorPosition(positionX, positionY);
-                Console.CursorLeft++;
-                if (life == 0)
+                switch (action)
                 {
-                    Looser();
+
+                    case "Enter": Console.Write("▒"); grid[currentX, currentY] = 2; break;
+                    case "Spacebar": Console.Write("◄"); break;
+                    case "Nothing": Console.Write(" "); Console.CursorLeft++; break;
+
+
                 }
             }
-            else
+            else if (grid[currentX, currentY] == 1)
             {
-                Console.Write("▒");
+                switch (action)
+                {
+                    case "Enter":
+                        Console.Write("X"); life -= 1; Console.SetCursorPosition(HeartX -= 2, HeartY); Console.Write(" "); Console.Write(" "); grid[currentX, currentY] = 3;
+                        if (life == 0)
+                        {
+                            Looser();
+                        }
+                        Console.SetCursorPosition(positionX+1, positionY);
+                        break;
+                    case "Spacebar": Console.Write("◄"); break;
+                    case "Nothing": Console.Write(" "); break;
+                    default: break;
+                }
+
 
             }
+            else if (grid[currentX, currentY]==2)
+            {
+                switch (action)
+                {
+                    default: Console.Write("▒");grid[currentX, currentY] = 2; break;
+                }
+
+            }
+            else if (grid[currentX, currentY] == 3)
+            {
+                switch (action)
+                {
+                    default: Console.Write("X");break;
+                }
+
+            }
+            Console.CursorLeft--;
         }
         static void consignes()
         {
