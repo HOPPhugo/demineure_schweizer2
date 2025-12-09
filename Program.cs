@@ -433,7 +433,7 @@ namespace demineure_schweizer2
             Console.SetCursorPosition((7 + collones * 4) + 4, 16);
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("\t- que toutes les vies ont été épuisées");
-            Console.SetCursorPosition((7 + collones * 4) + 4, 17);§
+            Console.SetCursorPosition((7 + collones * 4) + 4, 17);
             Console.ResetColor();
         }//Consignes
         static void Looser()
