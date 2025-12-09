@@ -1,4 +1,9 @@
-﻿using System;
+﻿///ETML  
+///Auteur : Hugo Schweizer
+///Date   : 09.12.2025
+///Description : Application de démineur simplifié en console C#, une grill est générée et le joueure doit mettre un drapeau sur les mines et explorer les cases sûres.
+
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -40,50 +45,49 @@ namespace demineure_schweizer2
                 Console.Clear();
                 Console.ResetColor();
 
-                //Show the title banner
+                //Affiche la bannière de titre
                 Title();
 
-                //Show game instructions
+                //Affiche les instructions des limites du plateau de jeu
                 Instructions();
 
-                //Prompt for number of rows and stock the value
+                //Demande le nombre de lignes et stocke la valeur
                 Rows(ref rowsNb);
 
-                //Prompt for number of columns and stock the value
+                //Demande le nombre de colonnes et stocke la valeur
                 Columns(ref columnsNb);
 
                 int[,] grid = new int[rowsNb, columnsNb];
 
-                //Prompt for difficulty level and stock the value
+                //Demande le niveau de difficulté et stocke la valeur
                 Difficulty(ref difficulty);
 
                 Console.Clear();
 
-                //Show the title banner again after clearing the console
+                //Affiche la bannière de titre
                 Title();
 
-                //Display game mode instructions
+                //Affiche les instructions du niveau de difficulté choisi
                 instructions2(difficulty);
-                //Generation of the game grid and display it
+
+                //Genère et affiche la grille de jeu
                 Grid(columnsNb,rowsNb,ref landMines,difficulty,ref grid,ref heartX,ref heartY);
 
-                //Display game rules and controls
+                //Affiche les consignes de jeu et les actions assignées aux touches
                 Instructions3(columnsNb);
 
-                //Place landmines on the grid
+                //Place les mines sur la grille de jeu
                 LandMines(landMines,columnsNb,rowsNb,ref grid);
 
-                //Manage player movement and interactions
+                //Gère les déplacements et les actions du joueur sur la grille
                 Movement(columnsNb,rowsNb,ref direction,ref currentX,ref currentY,ref grid,ref heartX,ref heartY);
             } while (win == false);
 
         }
 
         /// <summary>
-        /// Displays the title banner for the simplified Minesweeper game.
+        /// Affiche la bannière de titre du jeu.
         /// </summary>
-        /// <remarks>This method outputs a decorative title banner to the console, providing a visual
-        /// introduction to the game.</remarks>
         static void Title()
         {
             Console.WriteLine("\t****************************************************************************");
@@ -93,10 +97,8 @@ namespace demineure_schweizer2
         }//Title
 
         /// <summary>
-        /// Displays instructions for setting up the game board dimensions.
+        /// Affiche les instructions pour définir les dimensions du plateau de jeu.
         /// </summary>
-        /// <remarks>The instructions specify the minimum and maximum allowable dimensions for the game
-        /// board. The minimum size is 6 rows by 6 columns, and the maximum size is 30 rows by 30 columns.</remarks>
         static void Instructions()
         {
             Console.SetCursorPosition(3, 4);
@@ -111,49 +113,45 @@ namespace demineure_schweizer2
         }//Instructions
 
         /// <summary>
-        /// Prompts the user to input the number of rows, ensuring the value is within a valid range.
+        /// Demande à l'utilisateur d'entrer le nombre de lignes et valide l'entrée.
         /// </summary>
-        /// <remarks>The method repeatedly prompts the user until a valid integer between 6 and 30
-        /// (inclusive) is entered. If the input is invalid, an error message is displayed, and the user is asked to try
-        /// again.</remarks>
+        /// <param name="rowsNb">Nombre de lignes pour la grille de jeu, compris entre 6 et 30</param>
         static void Rows(ref int rowsNb)
         { 
-            bool rowsTrue = false;//check if the input is validated
+            bool rowsTrue = false;//vérifie si l'entrée est validée
             do {
                 Console.ResetColor();
                 Console.Write("Nombre de lignes : ");
                 bool getOut = int.TryParse(Console.ReadLine(), out rowsNb);
                 Console.ForegroundColor = ConsoleColor.Red;
-                if (getOut)//check if the input is an integer
+                if (getOut)//vérifie si l'entrée est bien entre 6 et 30
                 {
                     if (rowsNb < 6 || rowsNb > 30)
                     {
                         Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
-                    }//if
+                    }
                     else
                     {
-                        rowsTrue = true;//the input is validated
-                    }//else
-                }//if
+                        rowsTrue = true;//Entrée validée
+                    }
+                }
                 else
                 {
                     Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
-                }//else
+                }
             
-            }while(rowsTrue==false);//while the input is not validated
+            }while(rowsTrue==false);//Tant que l'entrée n'est pas validée
 
-        }//Rows
+        }//Fin Rows
 
         /// <summary>
-        /// Prompts the user to input the number of columns and validates the input.
+        /// Demande à l'utilisateur d'entrer le nombre de colonnes et la stocke la valeure.
         /// </summary>
-        /// <remarks>The method ensures that the user enters a valid integer within the range of 6 to 30.
-        /// If the input is invalid, the user is prompted to try again until a valid value is provided. Once a valid
-        /// value is entered, the console window size is adjusted accordingly.</remarks>
+        /// <param name="columnsNb">Nombre de collonnes pour la grille de jeu, compris entre 6 et 30</param>
         static void Columns(ref int columnsNb)
         {
 
-            bool columnsTrue = false;//check if the input is validated
+            bool columnsTrue = false;//Vérrifie si l'entrée est validée
             do
             {
                 Console.ResetColor();
@@ -161,35 +159,33 @@ namespace demineure_schweizer2
 
                 bool getOut = int.TryParse(Console.ReadLine(), out columnsNb);
                 Console.ForegroundColor = ConsoleColor.Red;
-                if (getOut)//check if the input is an integer
+                if (getOut)//Vérifie si l'entrée est bien entre 6 et 30
                 {
                     if (columnsNb < 6 || columnsNb > 30)
                     {
                         Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
-                    }//if
+                    }
                     else
                     {
                         Console.SetWindowSize(240, 63);
-                        columnsTrue = true;//the input is validated
+                        columnsTrue = true;//Entrée validée
 
-                    }//else
-                }//if
+                    }
+                }
                 else
                 {
                     Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
 
-                }//else
+                }
                 
             }
-            while (columnsTrue==false);//while the input is not validated
-        }//Columns
+            while (columnsTrue==false);//Tant que l'entrée n'est pas validée
+        }// Fin Columns
 
         /// <summary>
-        /// Prompts the user to select a difficulty level for the game and processes the input.
+        /// Demande à l'utilisateur de choisir un niveau de difficulté et stocke la valeure.
         /// </summary>
-        /// <remarks>The user is presented with three difficulty options: easy, medium, and hard. The
-        /// method validates the input and provides feedback based on the selected difficulty. If the input is invalid,
-        /// the user is prompted again.</remarks>
+        /// <param name="difficulty">Difficulté du jeu comrpise entre 1 et 3 </param>
         static void Difficulty(ref int difficulty)
         {
             bool diffcultyTrue = false;
@@ -203,33 +199,32 @@ namespace demineure_schweizer2
                 Console.WriteLine("----------------------------------------------------------------------------");
                 Console.Write("\nEntrez le niveau de difficulté: ");
                 bool getOut = int.TryParse(Console.ReadLine(), out difficulty);
-                if (getOut)
+                if (getOut) //Vérifie si l'entrée est bien entre 1 et 3, sinon affiche un message d'erreur et redemande une entrée
                 {
-                    switch (difficulty)
+                    switch (difficulty) //Gère les différents cas de difficulté entrés
                     {
                         case 1: Console.WriteLine("→ Vous avez choisi le niveau FACILE !"); diffcultyTrue = true; break;
                         case 2: Console.WriteLine("→ Vous avez choisi le niveau MOYEN !"); diffcultyTrue = true; break;
                         case 3: Console.WriteLine("→ Vous avez choisi le niveau DIFFICILE !"); diffcultyTrue = true; break;
                         default: Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n-Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n");break;
-                    }//switch
-                }//if
-                else
+                    }
+                }
+                else //Si l'entrée n'est pas un entier
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Saisie invalide !\n");
 
-                }//else
-            }while (diffcultyTrue==false) ;//while the input is not validated
-        }//Difficulty
+                }
+            }while (diffcultyTrue==false);//Tant que l'entrée n'est pas validée
+        }//Fin Difficulty
 
         /// <summary>
-        /// Displays a message indicating the current game mode based on the selected difficulty level.
+        /// Affiche les instructions du niveau de difficulté choisi.
         /// </summary>
-        /// <remarks>The method outputs a message to the console, including the difficulty level, with
-        /// specific background and foreground colors for each difficulty.</remarks>
+        /// <param name="difficulty">Niveau de difficulté du choisi par l'utilisateur</param>
         static void instructions2(int difficulty)
         {
-            switch (difficulty)
+            switch (difficulty)//Gère l'affichage des instructions selon le niveau de difficulté choisi
             {
                 case 1:
                     Console.Write("A vous de jouer !! Mode : ");
@@ -249,23 +244,21 @@ namespace demineure_schweizer2
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Difficile");
                     Console.ResetColor(); break;
-            }//switch
+            }
             Console.WriteLine("");
             Console.ResetColor();
 
-
-
-        }//Instructions2
+        }//Fin Instructions2
         static void Grid(int columnsNb, int rowsNb, ref int landMines, int difficulty, ref int[,] grid, ref int heartX, ref int heartY)
         {
-            int i = 0;
+            int i = 0; //Compteur du nombre de tours de boucle
             Console.CursorLeft = 5;
             Console.Write("╔═══╦");
 
-            for (; i < columnsNb - 2; i++)
+            for (; i < columnsNb - 2; i++) //Dessine la partie supérieure de la grille selon le nombre de colonnes
             {
                 Console.Write("═══╦");
-            }//for
+            }
             Console.Write("═══╗");
             i = 0;
 
@@ -273,23 +266,23 @@ namespace demineure_schweizer2
             Console.CursorLeft = 5;
             Console.Write("║  ");
 
-            for (; i < columnsNb; i++)
+            for (; i < columnsNb; i++)//Dessine les lignes intermédiaires de la grille selon le nombre de colonnes
             {
 
                 Console.Write(" ║  ");
-            }//for
+            }
 
-            for (int j = 0; j < rowsNb - 1; j++)
+            for (int j = 0; j < rowsNb - 1; j++)//Dessine les lignes intermédiaires verticales de la grille selon le nombre de lignes
             {
                 Console.WriteLine("");
                 Console.CursorLeft = 5;
                 i = 0;
                 Console.Write("╠═══╬");
 
-                for (; i < columnsNb - 2; i++)
+                for (; i < columnsNb - 2; i++)//Dessine les lignes intermédiaires de la grille selon le nombre de colonnes
                 {
                     Console.Write("═══╬");
-                }//for
+                }
                 Console.Write("═══╣");
 
                 i = 0;
@@ -297,21 +290,21 @@ namespace demineure_schweizer2
                 Console.CursorLeft = 5;
                 Console.Write("║  ");
 
-                for (; i < columnsNb; i++)
+                for (; i < columnsNb; i++)//Dessine les lignes intermédiaires de la grille selon le nombre de colonnes
                 {
 
                     Console.Write(" ║  ");
-                }//for
-            }//for
+                }
+            }
             i = 0;
             Console.WriteLine("");
             Console.CursorLeft = 5;
             Console.Write("╚═══╩");
 
-            for (; i < columnsNb - 2; i++)
+            for (; i < columnsNb - 2; i++)//Dessine la partie inférieure de la grille selon le nombre de colonnes
             {
                 Console.Write("═══╩");
-            }//for
+            }
 
             Console.Write("═══╝");
 
@@ -536,6 +529,7 @@ namespace demineure_schweizer2
         }//Consignes
         static void Looser()
         {
+            string answer;
             Console.Clear();
             Console.Beep();
             Console.Beep();
@@ -544,17 +538,21 @@ namespace demineure_schweizer2
             Console.WriteLine("C'est la fin !\r\n\r\n!! PERDU !! Désolé toutes les mines ont explosés !");
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Veut tu rejouer (O/N) ?");
-            string answer = Console.ReadLine();
-            switch (answer)
-            {
-                case "O":
-                case "o":
-                    GamePlay(); break;
-                case "N":
-                case "n":
-                    Console.WriteLine("Bonne journée !"); 
-                    Console.Read(); Environment.Exit(0); break;
-            }//switch
+            Console.CursorLeft++; 
+            
+            do{
+                answer = Console.ReadLine();            
+                switch (answer)
+                {
+                    case "O":
+                    case "o":
+                        GamePlay(); break;
+                    case "N":
+                    case "n":
+                        Console.WriteLine("Bonne journée !"); 
+                        Console.Read(); Environment.Exit(0); break;
+                }//switch
+            } while (answer != "n" || answer != "N" || answer != "o" || answer != "O");
         }//Looser
 
 
