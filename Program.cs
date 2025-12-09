@@ -497,9 +497,7 @@ namespace demineure_schweizer2
                 }//switch
 
             }//else if
-            if (win == false){
                 Console.CursorLeft--;
-            }
         }//CheckMines
         static void Instructions3(int columnsNb)
         {
