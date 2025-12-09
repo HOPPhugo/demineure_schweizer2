@@ -369,6 +369,7 @@ namespace demineure_schweizer2
                 {
                     case "Enter":
                         Console.Write("X"); life -= 1; Console.SetCursorPosition(HeartX -= 2, HeartY); Console.Write(" "); Console.Write(" "); grid[currentX, currentY] = 3;
+                        Console.Beep();
                         if (life == 0)
                         {
                             Looser();
@@ -438,6 +439,9 @@ namespace demineure_schweizer2
         static void Looser()
         {
             Console.Clear(); 
+            Console.Beep();
+            Console.Beep();
+            Console.Beep();
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("C'est la fin !\r\n\r\n!! PERDU !! Désolé toutes les mines ont explosés !");
             Console.ForegroundColor=ConsoleColor.Green;
