@@ -62,7 +62,7 @@ namespace demineure_schweizer2
                 int[,] grid = new int[rowsNb, columnsNb];
 
                 //Demande le niveau de difficulté et stocke la valeur
-                Difficulty(ref difficulty);
+                Difficulty(ref difficulty, landMines);
 
                 Console.Clear();
 
@@ -188,7 +188,7 @@ namespace demineure_schweizer2
         /// Demande à l'utilisateur de choisir un niveau de difficulté et stocke la valeure.
         /// </summary>
         /// <param name="difficulty">Difficulté du jeu comrpise entre 1 et 3 </param>
-        static void Difficulty(ref int difficulty)
+        static void Difficulty(ref int difficulty, int landMines)
         {
             bool diffcultyTrue = false;
             do{ 
@@ -210,6 +210,7 @@ namespace demineure_schweizer2
                         case 3: Console.WriteLine("→ Vous avez choisi le niveau DIFFICILE !"); diffcultyTrue = true; break;
                         default: Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n-Valeur hors limite ! Merci de choisir 1, 2 ou 3.\n");break;
                     }
+                    Console.WriteLine("Il y a " + landMines + "sur la grille ! ");
                 }
                 else //Si l'entrée n'est pas un entier
                 {
