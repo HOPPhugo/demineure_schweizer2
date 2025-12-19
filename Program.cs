@@ -43,7 +43,7 @@ namespace demineure_schweizer2
                 int heartX = 0; //Position X du dernier cœur
                 int heartY = 0; //Position Y du dernier cœur
                 int nbrDrapeau = 0;
-                const int START = 10;
+                 int start = 10;
 
                 Console.Clear();
                 Console.ResetColor();
@@ -75,16 +75,16 @@ namespace demineure_schweizer2
                 instructions2(difficulty, landMines);
 
                 //Genère et affiche la grille de jeu
-                Grid(columnsNb,rowsNb,ref landMines,difficulty,ref grid,ref heartX,ref heartY, lifeT, START);
+                Grid(columnsNb,rowsNb,ref landMines,difficulty,ref grid,ref heartX,ref heartY, lifeT, ref start);
 
                 //Affiche les consignes de jeu et les actions assignées aux touches
-                Instructions3(columnsNb, START);
+                Instructions3(columnsNb, start);
 
                 //Place les mines sur la grille de jeu
-                LandMines(landMines,columnsNb,rowsNb,ref grid, START, lifeT);
+                LandMines(landMines,columnsNb,rowsNb,ref grid, start, lifeT, heartX, heartY, difficulty);
 
                 //Gère les déplacements et les actions du joueur sur la grille
-                Movement(columnsNb,rowsNb,ref direction,ref currentX,ref currentY,ref grid,ref heartX,ref heartY, ref lifeT, ref landMines, ref nbrDrapeau, START);
+                Movement(columnsNb,rowsNb,ref direction,ref currentX,ref currentY,ref grid,ref heartX,ref heartY, ref lifeT, ref landMines, ref nbrDrapeau, start);
             } while (win == false);//Tant que le joueur n'a pas gagné
 
         }
@@ -202,6 +202,7 @@ namespace demineure_schweizer2
                 Console.WriteLine("         3--> niveau difficile");
                 Console.WriteLine("----------------------------------------------------------------------------");
                 Console.Write("\nEntrez le niveau de difficulté: ");
+                
                 bool getOut = int.TryParse(Console.ReadLine(), out difficulty);
                 if (getOut) //Vérifie si l'entrée est bien entre 1 et 3, sinon affiche un message d'erreur et redemande une entrée
                 {
@@ -256,11 +257,11 @@ namespace demineure_schweizer2
             Console.ResetColor();
 
         }//Fin Instructions2
-        static void Grid(int columnsNb, int rowsNb, ref int landMines, int difficulty, ref int[,] grid, ref int heartX, ref int heartY, List<char> lifeT, int START)
+        static void Grid(int columnsNb, int rowsNb, ref int landMines, int difficulty, ref int[,] grid, ref int heartX, ref int heartY, List<char> lifeT, ref int START)
         {
             int i = 0; //Compteur du nombre de tours de boucle
             Console.CursorLeft = 5;
-            Console.CursorTop = START;
+            Console.CursorTop = START++;
             Console.Write("╔═══╦");
 
             for (; i < columnsNb - 2; i++) //Dessine la partie supérieure de la grille selon le nombre de colonnes
@@ -332,7 +333,7 @@ namespace demineure_schweizer2
                 Console.Write(x);
             }
             Console.ResetColor();
-            heartX = Console.CursorLeft-3; //Position X du début de la barre de vie
+            heartX = Console.CursorLeft+1; //Position X du début de la barre de vie
             heartY = Console.CursorTop; //Position Y du début du tableau
         }// Fin Grid
 
@@ -350,9 +351,9 @@ namespace demineure_schweizer2
         static void Movement( int columnsNb, int rowsNb, ref string direction, ref int currentX, ref int currentY, ref int[,] grid, ref int heartX, ref int heartY, ref List <char> lifeT, ref int landMines, ref int nbrDrapeau, int START)
         {
             int lastSquare = (7 + columnsNb * 4) - 4; //Position X de la dernière case de la grille, calculée en fonction du nombre de colonnes et de la largeur des cases
-            int lastSquareY = (START + rowsNb * 2) - 2; //Position Y de la dernière case de la grille, calculée en fonction du nombre de lignes et de la hauteur des cases
+            int lastSquareY = (START + rowsNb * 2) -2; //Position Y de la dernière case de la grille, calculée en fonction du nombre de lignes et de la hauteur des cases
             int firstSquare = Console.CursorLeft; //Position X de la première case de la grille
-            int life = 3; //Nombre de vies initiales du joueur
+            int life = lifeT.Count; //Nombre de vies initiales du joueur
             for (int i = 0; win == false; i++) //Boucle principale du jeu qui continue tant que le joueur n'a pas gagné
             {
                 string action = ""; // Action actuelle du joueur (explorer une case, placer un drapeau, etc...)
@@ -378,8 +379,8 @@ namespace demineure_schweizer2
                     case "droite":
                         if (Console.CursorLeft == lastSquare)
                         {
-                            Console.CursorLeft = 7;
-                            currentX = 1;
+                            Console.CursorLeft = firstSquare;
+                            currentX = 0;
                         }
                         else
                         {
@@ -391,7 +392,7 @@ namespace demineure_schweizer2
                         if (Console.CursorLeft == 7)
                         {
                             Console.CursorLeft = lastSquare;
-                            currentX = columnsNb;
+                            currentX = columnsNb-1;
                         }
                         else
                         {
@@ -403,7 +404,7 @@ namespace demineure_schweizer2
                         if (Console.CursorTop <= START)
                         {
                             Console.CursorTop = lastSquareY;
-                            currentY = rowsNb;
+                            currentY = rowsNb-1;
                         }
                         else
                         {
@@ -415,8 +416,7 @@ namespace demineure_schweizer2
                         if (Console.CursorTop >= lastSquareY)
                         {
                             Console.CursorTop = START;
-                            currentY = 1;
-                            currentY = 1;
+                            currentY = 0;
                         }
                         else
                         {
@@ -439,19 +439,11 @@ namespace demineure_schweizer2
         /// <param name="rowsNb">Nombre de lignes dans la grille de jeu.</param>
         /// <param name="grid">Référence à la grille de jeu représentée sous forme de tableau à deux dimensions.</param>
         /// <returns> La grille de jeu mise à jour avec les mines placées.</returns>
-        static int[,] LandMines(int landMines, int columnsNb, int rowsNb,ref int[,] grid, int START, List <char> lifeT)
+        static int[,] LandMines(int landMines, int columnsNb, int rowsNb,ref int[,] grid, int START, List <char> lifeT, int heartX, int heartY, int difficulty)
         {
             Random random = new Random();
-            Console.SetCursorPosition(7, START-6);
-            for (int i = 0; i < landMines; i++)
-            {
-                lifeT.Add('♥');
-            }
-            Console.Write("Il y a ");
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write(landMines);
-            Console.ResetColor();
-            Console.WriteLine(" mines cachées sur la grille !");
+            
+            
             for (int i = 0; i < landMines; i++) //Boucle pour placer le nombre de mines selon le niveau de difficulté choisi, refait un tour si une mine est déjà présente à l'emplacement choisi
             {
                 int X = random.Next(0, columnsNb); //Génère un nombre aléatoire pour la position X de la mine, entre 0 et le nombre de colonnes
@@ -464,12 +456,51 @@ namespace demineure_schweizer2
                 else //Place la mine à l'emplacement choisi (le "°" représente une mine dans la grille, seulement actif pour quand je developpe, ne sera présent dans la version jouable finale) 
                 {
                     grid[Y, X] = 1;
-                    Console.SetCursorPosition(7 + (Y * 4), START+1 + (X * 2)); //Calcule la position du curseur en fonction de la position de la mine dans la grille pour y écrire le symbole de la mine
+                    Console.SetCursorPosition(7 + (Y * 4), START + (X * 2)); //Calcule la position du curseur en fonction de la position de la mine dans la grille pour y écrire le symbole de la mine
                     Console.Write("°");
                     Console.CursorLeft--;
                 }
             }
-            Console.SetCursorPosition(7, START+1);
+	        Console.SetCursorPosition(7, START-6);
+            switch (difficulty)
+            {
+                case 1:
+                    for (int i = 0; i < landMines; i++)
+                    {
+                        lifeT.Add('♥');
+                    }
+                    
+                    break;
+
+                case 2:
+                    for (int i = 0; i < landMines / 2; i++)
+                    {
+                        lifeT.Add('♥');
+                    }
+                    break;
+
+                case 3:
+                    for (int i = 0; i < 3; i++)
+                    {
+                        lifeT.Add('♥');
+                    }
+                    break;
+            }
+	        
+            Console.Write("Il y a ");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write(landMines);
+            Console.ResetColor();
+            Console.WriteLine(" mines cachées sur la grille !");
+            Console.SetCursorPosition(heartX, heartY);
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.OutputEncoding = Encoding.UTF8;
+            foreach (char c in lifeT)
+            {
+                Console.Write(c+ " ");
+            }
+            Console.ResetColor();
+            Console.SetCursorPosition(7, START);
             return grid; //Retourne la grille de jeu mise à jour avec les mines placées
 
         }//Fin LandMines
@@ -510,7 +541,7 @@ namespace demineure_schweizer2
                         landMines--;
                         Console.ForegroundColor = ConsoleColor.DarkRed;
                         foreach (char x in lifeT) {
-                            Console.Write(x);
+                            Console.Write(x+" ");
                         }
 
                         Console.ResetColor();
@@ -526,7 +557,7 @@ namespace demineure_schweizer2
                         Console.SetCursorPosition(positionX + 1, positionY);
 
                         break;
-                    case "Spacebar": Console.Write("◄");nbrDrapeau++; break;
+                    case "Spacebar": Console.Write("◄");nbrDrapeau++; grid[currentX, currentY] = 4; break;
                     case "Nothing": Console.Write(" "); break;
                     default: break;
                 }
@@ -535,12 +566,46 @@ namespace demineure_schweizer2
             }
             else if (grid[currentX, currentY] == 2)//Case déjà explorée et sûre
             {
-                Console.Write("▒"); grid[currentX, currentY] = 2;
+                Console.Write("▒"); 
 
             }
             else if (grid[currentX, currentY] == 3) //Case déjà explorée et avec une mine
             {
                 Console.Write("X");
+
+            }
+            else if (grid[currentX, currentY] == 4) //Case avec une mine et un drapeau
+            {
+                switch (action) //Gère les différentes actions possibles sur une case avec une mine et un drapeau
+                {
+                    case "Enter":
+                        Console.Write("X"); life -= 1; Console.SetCursorPosition(heartX, heartY); Console.Write(" "); Console.Write(" "); Console.Write(" "); Console.SetCursorPosition(heartX, heartY);
+                        lifeT[life] = ' ';
+                        landMines--;
+                        nbrDrapeau--;
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        foreach (char x in lifeT)
+                        {
+                            Console.Write(x + " ");
+                        }
+
+                        Console.ResetColor();
+
+                        grid[currentX, currentY] = 3;
+
+                        Console.Beep();
+                        if (life == 0) //Si le joueur n'a plus de vie, affiche l'écran de fin de jeu
+                        {
+                            Looser();
+                            break;
+                        }
+                        Console.SetCursorPosition(positionX + 1, positionY);
+
+                        break;
+                    case "Spacebar": Console.Write("◄");break;
+                    case "Nothing": Console.Write(" "); nbrDrapeau--; break;
+                }
+
 
             }
             if (nbrDrapeau == landMines)
@@ -626,10 +691,24 @@ namespace demineure_schweizer2
         /// <param name="life">Le nombre de vies restantes du joueur à la fin du jeu.</param>
         static void Winner(int life)
         {
+            string answer; //Réponse du joueur pour rejouer ou quitter
             Console.Clear();
-            Console.WriteLine("Félicitations ! Vous avez gagné ! \n Vous avez gangé avec " + life + " restante(s).");
+            Console.WriteLine("Félicitations ! Vous avez gagné avec " + life + " vies restante(s).");
+            Console.WriteLine("Veux tu rejouer (O/N) ?");
+            do
+            {
+                answer = Console.ReadLine().ToUpper();
+                switch (answer) // Gère la réponse du joueur pour rejouer ou quitter
+                {
+                    case "O":
+                        GamePlay(); break;
+                    case "N":
+                        Console.WriteLine("Bonne journée !");
+                        Console.Read(); Environment.Exit(0); break;
+                }
+            } while (answer != "N" || answer != "O"); //vérifie que la réponse est valide, sois oui ou non.
         }//Fin Winner
 
     }//Fin Program
 
-}//Fin NameSpaceA
+}//Fin NameSpaceA 
