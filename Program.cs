@@ -1,7 +1,8 @@
 ﻿///ETML  
 ///Auteur : Hugo Schweizer
-///Date   : 09.12.2025
-///Description : Application de démineur simplifié en console C#. Une grille est générée et le joueur doit placer des drapeaux sur les mines et explorer les cases sûres.
+///Date   : 21.12.2025
+///Description : Application de démineur simplifié en console C#. 
+///Une grille est générée et le joueur doit placer des drapeaux sur les mines et explorer les cases sûres.
 
 using System;
 using System.CodeDom;
@@ -27,99 +28,109 @@ namespace demineure_schweizer2
 
         }//Fin Main
 
+
+        /// <summary>
+        /// Fait fonctionner la boucle principale du jeu de démineur. Utilisé pour pouvoir relancer une partie après une victoire ou une défaite.
+        /// </summary>
         static void GamePlay()
         {
             bool win;
-                List<char> lifeT = new List<char>();
-                int rowsNb = 0; //Nombre de lignes
-                int columnsNb = 0; //Nombre de colonnes
-                int difficulty = 0; //Niveau de difficulté
-                int landMines = 0; //Nombre de mines
-                string direction = ""; //Direction du déplacement selon les touches fléchées
-                int currentX = 0; //Position X actuelle du curseur
-                int currentY = 0; //Position Y actuelle du curseur
-                int heartX = 0; //Position X du dernier cœur
-                int heartY = 0; //Position Y du dernier cœur
-                int nbrDrapeau = 0;
-                int start = 10;
-                win = false;
-                bool matchOver = false;
-                int life = 0;
+            List<char> lifeT = new List<char>();
+            int rowsNb = 0; //Nombre de lignes
+            int columnsNb = 0; //Nombre de colonnes
+            int difficulty = 0; //Niveau de difficulté
+            int landMines = 0; //Nombre de mines
+            string direction = ""; //Direction du déplacement selon les touches fléchées
+            int currentX = 0; //Position X actuelle du curseur
+            int currentY = 0; //Position Y actuelle du curseur
+            int heartX = 0; //Position X du dernier cœur
+            int heartY = 0; //Position Y du dernier cœur
+            int nbrDrapeau = 0;
+            int start = 10;
+            win = false;
+            bool matchOver = false;
+            int life = 0;
+            int lastSquare = 0;
+            int lastSquareY = 0;
+            int firstSquare = 0;
+            string action = "";
+            int positionX = 0;
+            int positionY = 0;
+
+            Console.Clear();
+            Console.ResetColor();
+            Console.SetWindowSize(120, 30);
+
+            //Affiche la bannière de titre
+            Title();
+
+            //Affiche les instructions des limites du plateau de jeu
+            Instructions();
+
+            //Demande le nombre de lignes et stocke la valeur
+            Rows(ref rowsNb);
+
+            //Demande le nombre de colonnes et stocke la valeur
+            Columns(ref columnsNb);
+
+            //Initialise la grille de jeu avec les dimensions choisies
+            int[,] grid = new int[rowsNb, columnsNb];
+
+            //Demande le niveau de difficulté et stocke la valeur
+            Difficulty(ref difficulty);
+
+            Console.Clear();
+
+            //Affiche la bannière de titre
+            Title();
+
+            //Affiche les instructions du niveau de difficulté choisi
+            instructions2(difficulty, landMines);
+
+            //Calcule le nombre de mines selon le niveau de difficulté et la taille du terrain
+            CalculeLandmines(rowsNb, columnsNb, ref landMines, difficulty);
+
+            //Génère et affiche la grille de jeu
+            Grid(columnsNb, rowsNb, ref landMines, difficulty, ref grid, ref heartX, ref heartY, lifeT, ref start);
+
+
+            //Affiche les consignes de jeu et les actions assignées aux touches
+            Instructions3(columnsNb, start);
+
+            //Place les mines sur la grille de jeu
+            PhysicalAndLogicalLandMines(landMines, columnsNb, rowsNb, ref grid, start, lifeT, heartX, heartY, difficulty, ref life);
+            firstSquare = 7; //Position X de la première case de la grille
+
+            //Affiche la barre de vie du joueur
+            LifeBar(heartX, heartY, ref lifeT, start, difficulty, landMines, ref life);
+
+            do
+            {
                 bool haveToCheck = false;
-                int lastSquare = 0;
-                int lastSquareY = 0;
-                int firstSquare = 0;
-                string action = "";
-                int positionX = 0;
-                int positionY = 0;
-
-                Console.Clear();
-                Console.ResetColor();
-                Console.SetWindowSize(120 , 30);
-                
-                //Affiche la bannière de titre
-                Title();
-
-                //Affiche les instructions des limites du plateau de jeu
-                Instructions();
-
-                //Demande le nombre de lignes et stocke la valeur
-                Rows(ref rowsNb);
-
-                //Demande le nombre de colonnes et stocke la valeur
-                Columns(ref columnsNb);
-
-                //Initialise la grille de jeu avec les dimensions choisies
-                int[,] grid = new int[rowsNb, columnsNb];
-
-                //Demande le niveau de difficulté et stocke la valeur
-                Difficulty(ref difficulty);
-
-                Console.Clear();
-
-                //Affiche la bannière de titre
-                Title();
-
-                //Affiche les instructions du niveau de difficulté choisi
-                instructions2(difficulty, landMines);
-                
-                CalculeLandmines(rowsNb, columnsNb, ref landMines, difficulty);
-            
-                //Génère et affiche la grille de jeu
-                Grid(columnsNb, rowsNb, ref landMines, difficulty, ref grid, ref heartX, ref heartY, lifeT, ref start);
-                
-
-                //Affiche les consignes de jeu et les actions assignées aux touches
-                Instructions3(columnsNb, start);
-
-                //Place les mines sur la grille de jeu
-                PhysicalAndLogicalLandMines(landMines, columnsNb, rowsNb, ref grid, start, lifeT, heartX, heartY, difficulty, ref life);
-                matchOver = false;
-                firstSquare = 7; //Position X de la première case de la grille
-                
-                LifeBar( heartX, heartY, ref lifeT, start, difficulty, landMines, ref life);
-                
-                do
+                //Gère les déplacements et les actions du joueur sur la grille
+                Movement(difficulty, ref lastSquare, ref lastSquareY, ref firstSquare, ref action, ref positionX, ref positionY, win, columnsNb, rowsNb, ref direction, ref currentX, ref currentY, ref grid, ref heartX, ref heartY, ref lifeT, ref landMines, ref nbrDrapeau, start, ref life, ref haveToCheck);
+                if (haveToCheck == true)
                 {
-                    haveToCheck = false;
-                    //Gère les déplacements et les actions du joueur sur la grille
-                    Movement(difficulty, ref lastSquare, ref lastSquareY, ref firstSquare, ref action, ref positionX, ref positionY, win, columnsNb, rowsNb, ref direction, ref currentX, ref currentY, ref grid, ref heartX, ref heartY, ref lifeT, ref landMines, ref nbrDrapeau, start, ref life, ref haveToCheck);
-                    if (haveToCheck == true)
-                    {
-                        CheckMines(positionX, positionY, ref life, action, ref grid, currentX, currentY, heartX, heartY, ref lifeT, ref landMines, ref nbrDrapeau);
-                    }
-                    ShowActualPlacedMines(landMines, positionX, positionY, 4, start + 12);
-                    if (life == 0)
-                    {
-                        Looser(ref matchOver);
-                    }
-                    if (nbrDrapeau == landMines)
-                    {
-                        Winner(life, ref matchOver);
-                    }
-                } while (matchOver == false);
+                    //Met à jour l'état de la grille de jeu en fonction de l'action du joueur et gère les conséquences de cette action
+                    CheckMines(positionX, positionY, ref life, action, ref grid, currentX, currentY, heartX, heartY, ref lifeT, ref landMines, ref nbrDrapeau);
+                }
+                //Affiche le nombre de mines restantes sur le terrain
+                ShowActualPlacedMines(landMines, positionX, positionY, 4, start + 12);
+                if (life == 0)
+                {
+                    //Affiche l'écran de fin de jeu lorsque le joueur perd toutes ses vies
+                    Looser(ref matchOver);
+                }
+                if (nbrDrapeau == landMines)
+                {
+                    Console.CursorLeft++;
 
-        }
+                    //Affiche l'écran de fin de jeu lorsque le joueur gagne
+                    Winner(life, ref matchOver);
+                }
+            } while (matchOver == false); //Tant que la partie n'est pas terminée
+
+        }//Fin GamePlay
 
         /// <summary>
         /// Affiche la bannière de titre du jeu.
@@ -263,6 +274,7 @@ namespace demineure_schweizer2
         /// Affiche les instructions du niveau de difficulté choisi.
         /// </summary>
         /// <param name="difficulty">Niveau de difficulté du choisi par l'utilisateur</param>
+        /// <param name="landMines">Nombre de mines calculé selon le niveau de difficulté et la taille du terrain</param>
         static void instructions2(int difficulty, int landMines)
         {
             Console.Write("À vous de jouer ! Mode : ");
@@ -288,6 +300,13 @@ namespace demineure_schweizer2
 
         }//Fin Instructions2
 
+        /// <summary>
+        /// Calcule le nombre de mines en fonction de la taille du terrain et du niveau de difficulté choisi.
+        /// </summary>
+        /// <param name="rowsNb"> Nombre de lignes choisies  par l'utilisateur</param>
+        /// <param name="columnsNb"> Nombre de colonnes choisi par l'utilisateur</param>
+        /// <param name="landMines">Nombre de mines calculé selon le niveau de difficulté et la taille du terrain</param>
+        /// <param name="difficulty"> Niveau de difficulté choisi par l'utilisateur</param>
         static void CalculeLandmines(int rowsNb, int columnsNb, ref int landMines, int difficulty)
         {
             landMines = (rowsNb / 2 + 1) * (columnsNb / 2 + 1); //Calcule la surface totale de la grille avec le calcul conformément au cahier des charges (va devenir le nombre de mines)
@@ -298,7 +317,20 @@ namespace demineure_schweizer2
                 case 2: landMines = landMines / 4; break;
                 case 3: landMines = (landMines * 40) / 100; break;
             }
-        }
+        }// Fin CalculeLandmines
+
+        /// <summary>
+        /// Dessine la grille de jeu dans la console et initialise les paramètres associés.
+        /// </summary>
+        /// <param name="columnsNb">Le nombre de colonnes dans le tableau</param>
+        /// <param name="rowsNb">Le nombre de lignes dans le tableau.</param>
+        /// <param name="landMines">Retourne le nombre de mines placées sur le terrain</param>
+        /// <param name="difficulty">La difficulté choisie par le joueur.</param>
+        /// <param name="grid">Retourne le tableau à deux dimensions</param>
+        /// <param name="heartX">Retourne la coordonnée X où la barre de vie commence.</param>
+        /// <param name="heartY">Retourne la coordonnée Y où la barre de vie commence.</param>
+        /// <param name="lifeT">Liste représentant la barre de vie.</param>
+        /// <param name="START">Retourne la position Y de début de la grille.</param>
         static void Grid(int columnsNb, int rowsNb, ref int landMines, int difficulty, ref int[,] grid, ref int heartX, ref int heartY, List<char> lifeT, ref int START)
         {
             int i = 0; //Compteur du nombre de tours de boucle
@@ -363,6 +395,12 @@ namespace demineure_schweizer2
             heartY = Console.CursorTop; //Position Y du début du tableau
         }// Fin Grid
 
+
+        /// <summary>
+        /// Affiche les consignes de jeu et les actions assignées aux touches.
+        /// </summary>
+        /// <param name="columnsNb">Le nombre de colonnes choisi par le joueur</param>
+        /// <param name="START">Le point de départ Y de la grille</param>
         static void Instructions3(int columnsNb, int START)
         {
             Console.SetCursorPosition((7 + columnsNb * 4) + 4, START);
@@ -399,7 +437,21 @@ namespace demineure_schweizer2
             Console.ResetColor();
         }//Fin Instructions3
 
-        
+
+        /// <summary>
+        /// Place des mines physiquement et logiquement sur la grille de jeu et dans le tableau 2D.
+        /// </summary>
+        /// <param name="landMines">Le total de mines à placer sur le terrain.</param>
+        /// <param name="columnsNb">Le nombre de colonnes du tableau.</param>
+        /// <param name="rowsNb">Le nombre de lignes du tableau.</param>
+        /// <param name="grid">Le tableau à deux dimensions représentant la grille de jeu.</param>
+        /// <param name="START">Le point de départ Y de la grille.</param>
+        /// <param name="lifeT">Liste représentant la barre de vie.</param>
+        /// <param name="heartX">La coordonnée X où la barre de vie commence.</param>
+        /// <param name="heartY">La coordonnée Y où la barre de vie commence.</param>
+        /// <param name="difficulty">La difficulté choisie par le joueur.</param>
+        /// <param name="life">Les vies restantes du joueur.</param>
+        /// <returns>Retourne la grille de jeu mise à jour avec les mines placées.</returns>
         static int[,] PhysicalAndLogicalLandMines(int landMines, int columnsNb, int rowsNb, ref int[,] grid, int START, List<char> lifeT, int heartX, int heartY, int difficulty, ref int life)
         {
             Random random = new Random();
@@ -423,7 +475,7 @@ namespace demineure_schweizer2
                 }
             }
             Console.SetCursorPosition(7, START - 6);
-            
+
             Console.Write("Il y a ");
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.Write(landMines);
@@ -431,8 +483,19 @@ namespace demineure_schweizer2
             Console.WriteLine(" mines cachées sur la grille !");
             return grid; //Retourne la grille de jeu mise à jour avec les mines placées
 
-        }//Fin LandMines
+        }//Fin PhysicalAndLogicalLandMines
 
+
+        /// <summary>
+        /// Affiche la barre de vie du joueur en fonction de la difficulté choisie et du nombre de mines.
+        /// </summary>
+        /// <param name="heartX">La coordonnée X dans la console où la barre de vie est affichée.</param>
+        /// <param name="heartY">La coordonnée Y dans la console où la barre de vie est affichée.</param>
+        /// <param name="lifeT">Liste représentant la barre de vie.</param>
+        /// <param name="START">Le point de départ Y de la grille.</param>
+        /// <param name="difficulty">La difficulté choisie par le joueur.</param>
+        /// <param name="landMines">Le nombre de mines placées sur le terrain.</param>
+        /// <param name="life">La vie du joueur.</param>
         static void LifeBar(int heartX, int heartY, ref List<char> lifeT, int START, int difficulty, int landMines, ref int life)
         {
             switch (difficulty)
@@ -569,15 +632,6 @@ namespace demineure_schweizer2
 
         }// Fin Movement
 
-        /// <summary>
-        /// Génère et place des mines aléatoirement sur la grille de jeu.
-        /// </summary>
-        /// <param name="landMines">Nombre de mines placées sur le terrain</param>
-        /// <param name="columnsNb">Nombre de colonnes dans la grille de jeu.</param>
-        /// <param name="rowsNb">Nombre de lignes dans la grille de jeu.</param>
-        /// <param name="grid">Référence à la grille de jeu représentée sous forme de tableau à deux dimensions.</param>
-        /// <returns> La grille de jeu mise à jour avec les mines placées.</returns>
-        
 
         /// <summary>
         /// Met à jour l'état de la grille de jeu en fonction de l'action du joueur et gère les conséquences de cette action.
@@ -600,7 +654,7 @@ namespace demineure_schweizer2
 
                     case "Enter": Console.Write("▒"); grid[currentX, currentY] = 2; break;
                     case "Spacebar": Console.Write("◄"); break;
-                    case "Nothing": Console.Write(" "); Console.CursorLeft++; break;
+                    case "Nothing": Console.Write(" ");break;
 
 
                 }
@@ -676,17 +730,21 @@ namespace demineure_schweizer2
 
                         break;
                     case "Spacebar": Console.Write("◄"); break;
-                    case "Nothing": Console.Write(" "); nbrDrapeau--; break;
+                    case "Nothing": Console.Write(" "); nbrDrapeau--;grid[currentX, currentY] = 1; break;
                 }
 
 
             }
-            if (nbrDrapeau == landMines)
-            {
-                Console.CursorLeft++;
-            }
             Console.CursorLeft--;
         }//Fin CheckMines
+
+        /// <summary> 
+        /// Affiche le nombre de mines restantes sur le terrain. 
+        /// </summary>
+        /// <param name="landMines">Le nombre de mines non explorées</param>
+        /// <param name="positionX">La position X actuelle du curseur.</param>
+        /// <param name="positionY">La position Y actuelle du curseur.</param>
+        /// <param name="actualMinesTextX">La position X où le texte doit être affiché.</param>
         static void ShowActualPlacedMines(int landMines, int positionX, int positionY, int actualMinesTextX, int actualMinesTextY)
         {
             positionX = Console.CursorLeft;
@@ -694,16 +752,12 @@ namespace demineure_schweizer2
             Console.SetCursorPosition(actualMinesTextX, actualMinesTextY);
             Console.WriteLine("Il y a encore " + landMines + " mines cachées sur le terrain !");
             Console.SetCursorPosition(positionX, positionY);
-        }
-        /// <summary>
-        /// Affiche les consignes de jeu et les actions assignées aux touches.
-        /// </summary>
-        /// <param name="columnsNb">Nombre de colonnes dans la grille de jeu.</param>
-        
+        }// Fin ShowActualPlacedMines
 
         /// <summary>
         /// Affiche l'écran de fin de jeu lorsque le joueur perd toutes ses vies et demande s'il souhaite rejouer.
         /// </summary>
+        /// <param name="matchOver">Indique si la partie est terminée.</param>
         static void Looser(ref bool matchOver)
         {
             string answer; //Réponse du joueur pour rejouer ou quitter
@@ -735,6 +789,7 @@ namespace demineure_schweizer2
         /// Affiche l'écran de fin de jeu lorsque le joueur gagne et indique le nombre de vies restantes.
         /// </summary>
         /// <param name="life">Le nombre de vies restantes du joueur à la fin du jeu.</param>
+        /// <param name="matchOver">Indique si la partie est terminée.</param> 
         static void Winner(int life, ref bool matchOver)
         {
             string answer; //Réponse du joueur pour rejouer ou quitter
