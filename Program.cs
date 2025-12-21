@@ -55,7 +55,8 @@ namespace demineure_schweizer2
 
                 Console.Clear();
                 Console.ResetColor();
-
+                Console.SetWindowSize(120 , 30);
+                
                 //Affiche la bannière de titre
                 Title();
 
@@ -72,7 +73,7 @@ namespace demineure_schweizer2
                 int[,] grid = new int[rowsNb, columnsNb];
 
                 //Demande le niveau de difficulté et stocke la valeur
-                Difficulty(ref difficulty, ref lifeT, grid, landMines);
+                Difficulty(ref difficulty);
 
                 Console.Clear();
 
@@ -81,17 +82,23 @@ namespace demineure_schweizer2
 
                 //Affiche les instructions du niveau de difficulté choisi
                 instructions2(difficulty, landMines);
-
+                
+                CalculeLandmines(rowsNb, columnsNb, ref landMines, difficulty);
+            
                 //Génère et affiche la grille de jeu
                 Grid(columnsNb, rowsNb, ref landMines, difficulty, ref grid, ref heartX, ref heartY, lifeT, ref start);
+                
 
                 //Affiche les consignes de jeu et les actions assignées aux touches
                 Instructions3(columnsNb, start);
 
                 //Place les mines sur la grille de jeu
-                LandMines(landMines, columnsNb, rowsNb, ref grid, start, lifeT, heartX, heartY, difficulty, ref life);
+                PhysicalAndLogicalLandMines(landMines, columnsNb, rowsNb, ref grid, start, lifeT, heartX, heartY, difficulty, ref life);
                 matchOver = false;
-                firstSquare = Console.CursorLeft; //Position X de la première case de la grille
+                firstSquare = 7; //Position X de la première case de la grille
+                
+                LifeBar( heartX, heartY, ref lifeT, start, difficulty, landMines, ref life);
+                
                 do
                 {
                     haveToCheck = false;
@@ -123,7 +130,7 @@ namespace demineure_schweizer2
             Console.WriteLine("\t*                (: Démineur simplifié (Hugo Schweizer) :)                 *");
             Console.WriteLine("\t****************************************************************************");
 
-        }//Title
+        }//Fin Title
 
         /// <summary>
         /// Affiche les instructions pour définir les dimensions du plateau de jeu.
@@ -139,7 +146,7 @@ namespace demineure_schweizer2
             Console.WriteLine("----------------------------------------------------------------------------");
             Console.SetCursorPosition(0, 9);
 
-        }//Instructions
+        }//Fin Instructions
 
         /// <summary>
         /// Demande à l'utilisateur d'entrer le nombre de lignes et valide l'entrée.
@@ -197,7 +204,6 @@ namespace demineure_schweizer2
                     }
                     else
                     {
-                        Console.SetWindowSize(240, 63);
                         columnsTrue = true;//Entrée validée
 
                     }
@@ -216,7 +222,7 @@ namespace demineure_schweizer2
         /// Demande à l'utilisateur de choisir un niveau de difficulté et stocke la valeur.
         /// </summary>
         /// <param name="difficulty">Difficulté du jeu comprise entre 1 et 3 </param>
-        static void Difficulty(ref int difficulty, ref List<char> lifeT, int[,] grid, int landMines)
+        static void Difficulty(ref int difficulty)
         {
             bool diffcultyTrue = false;
             do
@@ -259,32 +265,40 @@ namespace demineure_schweizer2
         /// <param name="difficulty">Niveau de difficulté du choisi par l'utilisateur</param>
         static void instructions2(int difficulty, int landMines)
         {
+            Console.Write("À vous de jouer ! Mode : ");
+            Console.BackgroundColor = ConsoleColor.Yellow;
             switch (difficulty)//Gère l'affichage des instructions selon le niveau de difficulté choisi
             {
                 case 1:
-                    Console.Write("À vous de jouer ! Mode : ");
-                    Console.BackgroundColor = ConsoleColor.Yellow;
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Facile");
-                    Console.ResetColor(); break;
+                    break;
                 case 2:
-                    Console.Write("À vous de jouer ! Mode : ");
-                    Console.BackgroundColor = ConsoleColor.Yellow;
                     Console.ForegroundColor = ConsoleColor.DarkBlue;
                     Console.WriteLine("Moyen");
-                    Console.ResetColor(); break;
+                    break;
                 case 3:
-                    Console.Write("À vous de jouer ! Mode : ");
-                    Console.BackgroundColor = ConsoleColor.Yellow;
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Difficile");
-                    Console.ResetColor(); break;
+                    break;
             }
-
+            Console.ResetColor();
             Console.WriteLine("");
             Console.ResetColor();
 
         }//Fin Instructions2
+
+        static void CalculeLandmines(int rowsNb, int columnsNb, ref int landMines, int difficulty)
+        {
+            landMines = (rowsNb / 2 + 1) * (columnsNb / 2 + 1); //Calcule la surface totale de la grille avec le calcul conformément au cahier des charges (va devenir le nombre de mines)
+
+            switch (difficulty) //Gère le nombre de mines selon le niveau de difficulté choisi
+            {
+                case 1: landMines = landMines / 10; break;
+                case 2: landMines = landMines / 4; break;
+                case 3: landMines = (landMines * 40) / 100; break;
+            }
+        }
         static void Grid(int columnsNb, int rowsNb, ref int landMines, int difficulty, ref int[,] grid, ref int heartX, ref int heartY, List<char> lifeT, ref int START)
         {
             int i = 0; //Compteur du nombre de tours de boucle
@@ -344,26 +358,121 @@ namespace demineure_schweizer2
             }
 
             Console.Write("═══╝");
-
-            landMines = (rowsNb / 2 + 1) * (columnsNb / 2 + 1); //Calcule la surface totale de la grille avec le calcul conformément au cahier des charges
-
-            switch (difficulty) //Gère le nombre de mines selon le niveau de difficulté choisi
-            {
-                case 1: landMines = landMines / 10; break;
-                case 2: landMines = landMines / 4; break;
-                case 3: landMines = (landMines * 40) / 100; break;
-            }
-
             grid = new int[rowsNb, columnsNb];//Initialise la grille de jeu avec les dimensions choisies
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            foreach (char x in lifeT)
-            {
-                Console.Write(x);
-            }
-            Console.ResetColor();
             heartX = Console.CursorLeft + 1; //Position X du début de la barre de vie
             heartY = Console.CursorTop; //Position Y du début du tableau
         }// Fin Grid
+
+        static void Instructions3(int columnsNb, int START)
+        {
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START);
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Consignes");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 1);
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("----------");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 2);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("\t- Pour se déplacer dans le jeu, utilisez les touches fléchées");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 3);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\t- Pour explorer une case : la touche Entrée");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 4);
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
+            Console.WriteLine("\t- Pour marquer une case comme mine (drapeau) : la touche Espace");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 5);
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("\t- La touche Entrée sur un drapeau retire le drapeau");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 6);
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine("\t- Pour quitter : la touche Échap");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 7);
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("La partie est gagnée :");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 8);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\t- une fois que toutes les cases ont été explorées");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 9);
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine("\t- que toutes les vies ont été épuisées");
+            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 10);
+            Console.ResetColor();
+        }//Fin Instructions3
+
+        
+        static int[,] PhysicalAndLogicalLandMines(int landMines, int columnsNb, int rowsNb, ref int[,] grid, int START, List<char> lifeT, int heartX, int heartY, int difficulty, ref int life)
+        {
+            Random random = new Random();
+
+
+            for (int i = 0; i < landMines; i++) //Boucle pour placer le nombre de mines selon le niveau de difficulté choisi, refait un tour si une mine est déjà présente à l'emplacement choisi
+            {
+                int X = random.Next(0, columnsNb); //Génère un nombre aléatoire pour la position X de la mine, entre 0 et le nombre de colonnes
+                int Y = random.Next(0, rowsNb); //Génère un nombre aléatoire pour la position Y de la mine, entre 0 et le nombre de lignes
+
+                if (grid[Y, X] == 1)//Vérifie si une mine est déjà présente à l'emplacement choisi
+                {
+                    i--;
+                }
+                else //Place la mine à l'emplacement choisi (le "°" représente une mine dans la grille, uniquement pour le développement, ne sera pas présent dans la version jouable finale) 
+                {
+                    grid[Y, X] = 1;
+                    Console.SetCursorPosition(7 + (Y * 4), START + (X * 2)); //Calcule la position du curseur en fonction de la position de la mine dans la grille pour y écrire le symbole de la mine
+                    Console.Write("°");
+                    Console.CursorLeft--;
+                }
+            }
+            Console.SetCursorPosition(7, START - 6);
+            
+            Console.Write("Il y a ");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.Write(landMines);
+            Console.ResetColor();
+            Console.WriteLine(" mines cachées sur la grille !");
+            return grid; //Retourne la grille de jeu mise à jour avec les mines placées
+
+        }//Fin LandMines
+
+        static void LifeBar(int heartX, int heartY, ref List<char> lifeT, int START, int difficulty, int landMines, ref int life)
+        {
+            switch (difficulty)
+            {
+                case 1:
+                    for (int i = 0; i < landMines; i++)
+                    {
+                        lifeT.Add('♥');
+                        life++;
+                    }
+                    break;
+
+                case 2:
+                    for (int i = 0; i < landMines / 2; i++)
+                    {
+                        lifeT.Add('♥');
+                        life++;
+                    }
+                    break;
+
+                case 3:
+                    for (int i = 0; i < 3; i++)
+                    {
+                        lifeT.Add('♥');
+                        life++;
+                    }
+                    break;
+            }
+
+            Console.SetCursorPosition(heartX, heartY);
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.OutputEncoding = Encoding.UTF8;
+            foreach (char c in lifeT)
+            {
+                Console.Write(c + " ");
+            }
+            Console.ResetColor();
+            Console.SetCursorPosition(7, START);
+        }// Fin LifeBar
+
 
         /// <summary>
         /// //Gère les déplacements et les actions du joueur sur la grille.
@@ -468,74 +577,7 @@ namespace demineure_schweizer2
         /// <param name="rowsNb">Nombre de lignes dans la grille de jeu.</param>
         /// <param name="grid">Référence à la grille de jeu représentée sous forme de tableau à deux dimensions.</param>
         /// <returns> La grille de jeu mise à jour avec les mines placées.</returns>
-        static int[,] LandMines(int landMines, int columnsNb, int rowsNb, ref int[,] grid, int START, List<char> lifeT, int heartX, int heartY, int difficulty, ref int life)
-        {
-            Random random = new Random();
-
-
-            for (int i = 0; i < landMines; i++) //Boucle pour placer le nombre de mines selon le niveau de difficulté choisi, refait un tour si une mine est déjà présente à l'emplacement choisi
-            {
-                int X = random.Next(0, columnsNb); //Génère un nombre aléatoire pour la position X de la mine, entre 0 et le nombre de colonnes
-                int Y = random.Next(0, rowsNb); //Génère un nombre aléatoire pour la position Y de la mine, entre 0 et le nombre de lignes
-
-                if (grid[Y, X] == 1)//Vérifie si une mine est déjà présente à l'emplacement choisi
-                {
-                    i--;
-                }
-                else //Place la mine à l'emplacement choisi (le "°" représente une mine dans la grille, uniquement pour le développement, ne sera pas présent dans la version jouable finale) 
-                {
-                    grid[Y, X] = 1;
-                    Console.SetCursorPosition(7 + (Y * 4), START + (X * 2)); //Calcule la position du curseur en fonction de la position de la mine dans la grille pour y écrire le symbole de la mine
-                    Console.Write("°");
-                    Console.CursorLeft--;
-                }
-            }
-            Console.SetCursorPosition(7, START - 6);
-            switch (difficulty)
-            {
-                case 1:
-                    for (int i = 0; i < landMines; i++)
-                    {
-                        lifeT.Add('♥');
-                        life++;
-                    }
-
-                    break;
-
-                case 2:
-                    for (int i = 0; i < landMines / 2; i++)
-                    {
-                        lifeT.Add('♥');
-                        life++;
-                    }
-                    break;
-
-                case 3:
-                    for (int i = 0; i < 3; i++)
-                    {
-                        lifeT.Add('♥');
-                        life++;
-                    }
-                    break;
-            }
-
-            Console.Write("Il y a ");
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write(landMines);
-            Console.ResetColor();
-            Console.WriteLine(" mines cachées sur la grille !");
-            Console.SetCursorPosition(heartX, heartY);
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.OutputEncoding = Encoding.UTF8;
-            foreach (char c in lifeT)
-            {
-                Console.Write(c + " ");
-            }
-            Console.ResetColor();
-            Console.SetCursorPosition(7, START);
-            return grid; //Retourne la grille de jeu mise à jour avec les mines placées
-
-        }//Fin LandMines
+        
 
         /// <summary>
         /// Met à jour l'état de la grille de jeu en fonction de l'action du joueur et gère les conséquences de cette action.
@@ -657,41 +699,7 @@ namespace demineure_schweizer2
         /// Affiche les consignes de jeu et les actions assignées aux touches.
         /// </summary>
         /// <param name="columnsNb">Nombre de colonnes dans la grille de jeu.</param>
-        static void Instructions3(int columnsNb, int START)
-        {
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START);
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Consignes");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 1);
-            Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine("----------");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 2);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("\t- Pour se déplacer dans le jeu, utilisez les touches fléchées");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 3);
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\t- Pour explorer une case : la touche Entrée");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 4);
-            Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine("\t- Pour marquer une case comme mine (drapeau) : la touche Espace");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 5);
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("\t- La touche Entrée sur un drapeau retire le drapeau");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 6);
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
-            Console.WriteLine("\t- Pour quitter : la touche Échap");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 7);
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("La partie est gagnée :");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 8);
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("\t- une fois que toutes les cases ont été explorées");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 9);
-            Console.ForegroundColor = ConsoleColor.DarkGreen;
-            Console.WriteLine("\t- que toutes les vies ont été épuisées");
-            Console.SetCursorPosition((7 + columnsNb * 4) + 4, START + 10);
-            Console.ResetColor();
-        }//Fin Instructions3
+        
 
         /// <summary>
         /// Affiche l'écran de fin de jeu lorsque le joueur perd toutes ses vies et demande s'il souhaite rejouer.
