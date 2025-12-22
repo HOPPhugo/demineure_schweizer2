@@ -56,7 +56,7 @@ namespace demineure_schweizer2
             string action = "";
             int positionX = 0;
             int positionY = 0;
-
+            int actualTextY = 0;
             Console.Clear();
             Console.ResetColor();
             Console.SetWindowSize(120, 30);
@@ -91,7 +91,7 @@ namespace demineure_schweizer2
             CalculeLandmines(rowsNb, columnsNb, ref landMines, difficulty);
 
             //Génère et affiche la grille de jeu
-            Grid(columnsNb, rowsNb, ref landMines, difficulty, ref grid, ref heartX, ref heartY, lifeT, ref start);
+            Grid(columnsNb, rowsNb, ref landMines, difficulty, ref grid, ref heartX, ref heartY, lifeT, ref start, ref actualTextY);
 
 
             //Affiche les consignes de jeu et les actions assignées aux touches
@@ -115,7 +115,7 @@ namespace demineure_schweizer2
                     CheckMines(positionX, positionY, ref life, action, ref grid, currentX, currentY, heartX, heartY, ref lifeT, ref landMines, ref nbrDrapeau);
                 }
                 //Affiche le nombre de mines restantes sur le terrain
-                ShowActualPlacedMines(landMines, positionX, positionY, 4, start + 12);
+                ShowActualPlacedMines(landMines, positionX, positionY, 4, start + 12, rowsNb, actualTextY);
                 if (life == 0)
                 {
                     //Affiche l'écran de fin de jeu lorsque le joueur perd toutes ses vies
@@ -331,7 +331,7 @@ namespace demineure_schweizer2
         /// <param name="heartY">Retourne la coordonnée Y où la barre de vie commence.</param>
         /// <param name="lifeT">Liste représentant la barre de vie.</param>
         /// <param name="START">Retourne la position Y de début de la grille.</param>
-        static void Grid(int columnsNb, int rowsNb, ref int landMines, int difficulty, ref int[,] grid, ref int heartX, ref int heartY, List<char> lifeT, ref int START)
+        static void Grid(int columnsNb, int rowsNb, ref int landMines, int difficulty, ref int[,] grid, ref int heartX, ref int heartY, List<char> lifeT, ref int START, ref int actualTextY)
         {
             int i = 0; //Compteur du nombre de tours de boucle
             Console.CursorLeft = 5;
@@ -393,6 +393,7 @@ namespace demineure_schweizer2
             grid = new int[rowsNb, columnsNb];//Initialise la grille de jeu avec les dimensions choisies
             heartX = Console.CursorLeft + 1; //Position X du début de la barre de vie
             heartY = Console.CursorTop; //Position Y du début du tableau
+            actualTextY = Console.CursorTop + 1; //Position Y du texte des mines restantes
         }// Fin Grid
 
 
@@ -470,7 +471,7 @@ namespace demineure_schweizer2
                 {
                     grid[Y, X] = 1;
                     Console.SetCursorPosition(7 + (Y * 4), START + (X * 2)); //Calcule la position du curseur en fonction de la position de la mine dans la grille pour y écrire le symbole de la mine
-                    Console.Write("°");
+                    Console.Write("");
                     Console.CursorLeft--;
                 }
             }
@@ -663,11 +664,10 @@ namespace demineure_schweizer2
             {
                 switch (action) //Gère les différentes actions possibles sur une case avec une mine
                 {
-                    case "Enter":
-                        Console.Write("X"); life -= 1; Console.SetCursorPosition(heartX, heartY); Console.Write(" "); Console.Write(" "); Console.Write(" "); Console.SetCursorPosition(heartX, heartY);
+                    case "Enter":Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.Write("X"); life -= 1; Console.SetCursorPosition(heartX, heartY);
                         lifeT[life] = ' ';
                         landMines--;
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
                         foreach (char x in lifeT)
                         {
                             Console.Write(x + " ");
@@ -699,19 +699,20 @@ namespace demineure_schweizer2
             }
             else if (grid[currentX, currentY] == 3) //Case déjà explorée et avec une mine
             {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.Write("X");
-
+                Console.ResetColor();
             }
             else if (grid[currentX, currentY] == 4) //Case avec une mine et un drapeau
             {
                 switch (action) //Gère les différentes actions possibles sur une case avec une mine et un drapeau
                 {
                     case "Enter":
-                        Console.Write("X"); life -= 1; Console.SetCursorPosition(heartX, heartY); Console.Write(" "); Console.Write(" "); Console.Write(" "); Console.SetCursorPosition(heartX, heartY);
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.Write("X"); life -= 1; Console.SetCursorPosition(heartX, heartY);
                         lifeT[life] = ' ';
                         landMines--;
                         nbrDrapeau--;
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
                         foreach (char x in lifeT)
                         {
                             Console.Write(x + " ");
@@ -745,11 +746,11 @@ namespace demineure_schweizer2
         /// <param name="positionX">La position X actuelle du curseur.</param>
         /// <param name="positionY">La position Y actuelle du curseur.</param>
         /// <param name="actualMinesTextX">La position X où le texte doit être affiché.</param>
-        static void ShowActualPlacedMines(int landMines, int positionX, int positionY, int actualMinesTextX, int actualMinesTextY)
+        static void ShowActualPlacedMines(int landMines, int positionX, int positionY, int actualMinesTextX, int actualMinesTextY, int rowsNb, int actualTextY)
         {
             positionX = Console.CursorLeft;
             positionY = Console.CursorTop;
-            Console.SetCursorPosition(actualMinesTextX, actualMinesTextY);
+            Console.SetCursorPosition(actualMinesTextX, actualTextY);
             Console.WriteLine("Il y a encore " + landMines + " mines cachées sur le terrain !");
             Console.SetCursorPosition(positionX, positionY);
         }// Fin ShowActualPlacedMines
