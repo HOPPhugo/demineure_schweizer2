@@ -132,6 +132,7 @@ namespace demineure_schweizer2
         /// </summary>
         static void Title()
         {
+            Console.SetWindowSize(240, 63);
             Console.WriteLine("\t****************************************************************************");
             Console.WriteLine("\t*                (: Démineur simplifié (Hugo Schweizer) :)                 *");
             Console.WriteLine("\t****************************************************************************");
@@ -180,7 +181,7 @@ namespace demineure_schweizer2
                 }
                 else
                 {
-                    Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
+                    Console.WriteLine("Veuillez entrer un chiffre !\n");
                 }
 
             } while (rowsTrue == false);//Tant que l'entrée n'est pas validée
@@ -216,7 +217,7 @@ namespace demineure_schweizer2
                 }
                 else
                 {
-                    Console.WriteLine("Valeur hors limite ! Merci de réessayer !\n");
+                    Console.WriteLine("Veuillez entrer un chiffre !\n");
 
                 }
 
@@ -245,6 +246,7 @@ namespace demineure_schweizer2
                 bool getOut = int.TryParse(Console.ReadLine(), out difficulty);
                 if (getOut) //Vérifie si l'entrée est bien entre 1 et 3, sinon affiche un message d'erreur et redemande une entrée
                 {
+
                     switch (difficulty) //Gère les différents cas de difficulté entrés
                     {
                         case 1:
@@ -263,6 +265,7 @@ namespace demineure_schweizer2
 
                 }
             } while (diffcultyTrue == false);//Tant que l'entrée n'est pas validée
+            Console.ReadKey();
         }//Fin Difficulty
 
         /// <summary>
@@ -649,7 +652,7 @@ namespace demineure_schweizer2
                 {
 
                     case "Enter": Console.Write("▒"); grid[currentX, currentY] = 2; break;
-                    case "Spacebar": Console.Write("◄"); break;
+                    case "Spacebar": Console.Write("◄"); grid[currentX, currentY] = 5; break;
                     case "Nothing": Console.Write(" ");break;
 
 
@@ -703,26 +706,7 @@ namespace demineure_schweizer2
                 switch (action) //Gère les différentes actions possibles sur une case avec une mine et un drapeau
                 {
                     case "Enter":
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.Write("X"); life -= 1; Console.SetCursorPosition(heartX, heartY);
-                        lifeT[life] = ' ';
-                        landMines--;
-                        nbrDrapeau--;
-                        foreach (char x in lifeT)
-                        {
-                            Console.Write(x + " ");
-                        }
-
-                        Console.ResetColor();
-
-                        grid[currentX, currentY] = 3;
-
-                        Console.Beep();
-                        if (life == 0) //Si le joueur n'a plus de vie, affiche l'écran de fin de jeu
-                        {
-                            break;
-                        }
-                        Console.SetCursorPosition(positionX + 1, positionY);
+                        Console.Write(" "); nbrDrapeau--; grid[currentX, currentY] = 1;
 
                         break;
                     case "Spacebar": Console.Write("◄"); break;
@@ -731,7 +715,18 @@ namespace demineure_schweizer2
 
 
             }
-            Console.CursorLeft--;
+            else if (grid[currentX, currentY] == 5)//Case sûre avec un drapeau
+            {
+                switch (action) //Gère les différentes actions possibles sur une case avec une mine et un drapeau
+                {
+                    case "Enter":
+                        Console.Write(" "); nbrDrapeau--; grid[currentX, currentY] = 0; break;
+                    case "Spacebar": Console.Write("◄"); break;
+                    case "Nothing": Console.Write(" "); nbrDrapeau--; grid[currentX, currentY] = 0; break;
+                }
+
+            }
+                Console.CursorLeft--;
         }//Fin CheckMines
 
         /// <summary> 
